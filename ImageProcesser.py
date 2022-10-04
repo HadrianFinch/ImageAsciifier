@@ -6,7 +6,7 @@ import numpy as np
 from progress.bar import PixelBar
 
 # read an image
-image = imageio.imread('images/python.jpg')
+image = imageio.imread('images/cat.jpg')
   
 def RgbToGray(rgb):
 
