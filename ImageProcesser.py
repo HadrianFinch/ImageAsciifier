@@ -4,13 +4,8 @@ import imageio.v3 as imageio
 import numpy as np
 
 # read an image
-image = imageio.imread('images/cat.jpg')
+image = imageio.imread('images/python.jpg')
   
-# print shape of the image
-print(image.shape)
-
-print(image[2][4][2])
-
 def RgbToGray(rgb):
 
     r = rgb[0]
