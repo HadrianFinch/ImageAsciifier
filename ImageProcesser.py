@@ -91,15 +91,15 @@ def GenerateAscii(img, chunkWidth, chunkHeight):
 
     return [asciiText, escapedConsoleText]
 
+if __name__ == "__main__":
+    newImage = GenerateAscii(image, 4, 10)
 
-newImage = GenerateAscii(image, 4, 10)
+    print("\n", newImage[1])
 
-print("\n", newImage[1])
+    file = open("output.asciiArt", "w")
 
-file = open("output.asciiArt", "w")
+    print(colored(255, 0, 33, "foobar blat blah"))
 
-print(colored(255, 0, 33, "foobar blat blah"))
+    file.write(newImage[0])
 
-file.write(newImage[0])
-
-print("output written to output.asciiArt")
+    print("output written to output.asciiArt")
