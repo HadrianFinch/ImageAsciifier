@@ -6,7 +6,7 @@ import numpy as np
 from progress.bar import PixelBar
 
 # read an image
-image = imageio.imread('images/cat.jpg')
+image = imageio.imread('images/greyandh.jpg')
   
 def RgbToGray(rgb):
 
@@ -17,7 +17,8 @@ def RgbToGray(rgb):
 
     return gray
 
-greyRamp = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\\|()1\{\}[]?-_+~<>i!lI;:,\"^`'. "
+# greyRamp = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\\|()1\{\}[]?-_+~<>i!lI;:,\"^`'. "
+greyRamp = "▮▼●cɵ*v<>^`\"'~."
 def GetCharacterFromGreyscale(gs):
     return greyRamp[ceil((len(greyRamp) - 1) * gs / 255)]
 
