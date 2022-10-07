@@ -1,29 +1,37 @@
 import dearpygui.dearpygui as dpg
 
 dpg.create_context()
-dpg.create_viewport(title='Image Asciifier', width=1000, height=800)
+dpg.create_viewport(title='Image Asciifier', width=850, height=500)
 
-def FileDialogCallback(sender, app_data):
-    print('OK was clicked.')
-    print("Sender: ", sender)
-    print("App Data: ", app_data)
+# define varibles
+imageFilePath = "No file loaded"
 
-with dpg.file_dialog(directory_selector=False, show=False, callback=FileDialogCallback, id="filePicker01"):
+# local varibles
+
+
+def FileDialogCallback(sender, appData):
+    imageFilePath = appData["file_path_name"]
+
+with dpg.file_dialog(directory_selector=False, show=False, callback=FileDialogCallback, id="filePicker01", width=700, height=400, label="Select an Image"):
     dpg.add_file_extension("Supported image fileds (*.jpg){.jpg,jpeg}", color=(0, 255, 255, 255))
 
-with dpg.window(label="Example Window", tag="MainWindow"):
-    dpg.add_text("Hello, world")
-    dpg.add_button(label="Save")
-    dpg.add_input_text(label="string", default_value="Quick brown fox")
-    dpg.add_slider_float(label="float", default_value=0.273, max_value=1)
+with dpg.window(label="Image Asciifier", tag="MainWindow"):
 
+    dpg.add_separator()
+    dpg.add_text(imageFilePath)
     dpg.add_button(label="Select Image File", callback=lambda: dpg.show_item("filePicker01"))
 
-dpg.set_primary_window("MainWindow", True)
+def InitGUI():
+    dpg.set_primary_window("MainWindow", True)
 
-dpg.setup_dearpygui()
+    dpg.setup_dearpygui()
 
-dpg.show_viewport()
-dpg.start_dearpygui()
+    dpg.show_viewport()
+    dpg.start_dearpygui()
 
-dpg.destroy_context()
+def CloseGUI():
+    dpg.destroy_context()
+
+if __name__ == "__main__":
+    InitGUI()
+    CloseGUI()
