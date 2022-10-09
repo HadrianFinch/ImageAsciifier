@@ -5,9 +5,6 @@ import imageio.v3 as imageio
 import numpy as np
 from progress.bar import PixelBar
 
-# read an image
-image = imageio.imread('images/greyandh.jpg')
-  
 def RgbToGray(rgb):
 
     r = rgb[0]
@@ -17,21 +14,22 @@ def RgbToGray(rgb):
 
     return gray
 
-# greyRamp = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\\|()1\{\}[]?-_+~<>i!lI;:,\"^`'. "
-greyRamp = "▮▼●cɵ*v<>^`\"'~."
+greyRamp = "GREYramp."
+
 def GetCharacterFromGreyscale(gs):
     return greyRamp[ceil((len(greyRamp) - 1) * gs / 255)]
 
 def colored(r, g, b, text):
     return "\033[38;2;{};{};{}m{}\033[38;2;255;255;255m".format(r, g, b, text)
 
-def GenerateAscii(img, chunkWidth, chunkHeight):
+def GenerateAscii(img, chunkWidth, chunkHeight, ProgressCallback):
 
     totalLoops = img.shape[0] * img.shape[1]
+    currentProgress = 0
 
     # newImage = np.zeros((floor(img.shape[0] / chunkHeight), floor(img.shape[1] / chunkWidth), 3), dtype="uint8")
     asciiText = ""
-    escapedConsoleText = ""
+    # escapedConsoleText = ""
 
     bar = PixelBar('Processing', max=totalLoops)
     
@@ -51,7 +49,15 @@ def GenerateAscii(img, chunkWidth, chunkHeight):
 
                     pixelColors.append(img[y][x])
                     pixels.append(RgbToGray(img[y][x]))
+
                     bar.next()
+
+                    currentProgress += 1
+                    exit = ProgressCallback(currentProgress, totalLoops)
+
+                    if (exit):
+                        return None
+
 
             colorAverage = [0, 0, 0]
             greyscaleAverage = 0
@@ -75,7 +81,7 @@ def GenerateAscii(img, chunkWidth, chunkHeight):
                 colorAverage[2] = 0
             char  = GetCharacterFromGreyscale(greyscaleAverage)
             asciiText += char
-            escapedConsoleText += colored(colorAverage[0], colorAverage[1], colorAverage[2], char)
+            # escapedConsoleText += colored(colorAverage[0], colorAverage[1], colorAverage[2], char)
             # if (colorAverage[0] != colorAverage[1]):
             #     print("Different!")
 
@@ -87,19 +93,16 @@ def GenerateAscii(img, chunkWidth, chunkHeight):
             # newImage[newY][newX][2] = average
 
         asciiText += "\n"
-        escapedConsoleText += "\n"
+        # escapedConsoleText += "\n"
 
-    return [asciiText, escapedConsoleText]
+    return asciiText
+
+def defaultCallback(a, b):
+    return False
 
 if __name__ == "__main__":
-    newImage = GenerateAscii(image, 4, 10)
+    image = imageio.imread("images/cat.jpg")
 
-    print("\n", newImage[1])
+    newImage = GenerateAscii(image, 4, 10, defaultCallback)
 
-    file = open("output.asciiArt", "w")
-
-    print(colored(255, 0, 33, "foobar blat blah"))
-
-    file.write(newImage[0])
-
-    print("output written to output.asciiArt")
+    print("\n", newImage)
