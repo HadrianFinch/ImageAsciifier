@@ -4,18 +4,22 @@ from cProfile import label
 from email.policy import default
 import ImageProcesser
 import dearpygui.dearpygui as dpg
+import pyperclip as clipboard
+from math import floor
 
 import imageio.v3 as imageio
 
 dpg.create_context()
-dpg.create_viewport(title='Image Asciifier', width=850, height=500)
+dpg.create_viewport(title='Image Asciifier', width=850, height=600)
 
 # local varibles
 imageFilePath = "No file selected"
 characterWidth = 4
-characterHeight = 10
+characterHeight = 8
 
 defaultGreyRamp = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\\|()1\{\}[]?-_+~<>i!lI;:,\"^`'. "
+
+outputText = "No output"
 
 cancel = False
 
@@ -29,6 +33,10 @@ def FileDialogCallback(sender, appData):
 def ProgressCallback(progress, max):
     dpg.set_value("ProgressBar", progress / max)
 
+    text = "Processing Image: " + str(progress) + "/" + str(max) + "  |  " + str(floor((progress / max) * 100)) + "%"
+
+    dpg.set_value("ProgressText", text)
+
     if (cancel):
         dpg.configure_item("ProgressModal", show=False)
 
@@ -36,6 +44,8 @@ def ProgressCallback(progress, max):
 
 def Generate():
     global cancel
+    global outputText
+
     cancel = False
 
     dpg.set_value("ProgressBar", 0)
@@ -45,14 +55,20 @@ def Generate():
     characterHeight = dpg.get_value("CharHeight")
 
     image = imageio.imread(imageFilePath)
-    ascii = ImageProcesser.GenerateAscii(image, characterWidth, characterHeight, ProgressCallback)
+    outputText = ImageProcesser.GenerateAscii(image, characterWidth, characterHeight, ProgressCallback)
 
     dpg.configure_item("ProgressModal", show=False)
 
-    print("\n", ascii)
+    dpg.set_value("PreviewText", outputText)
+    dpg.configure_item("Preview", show=True)
+
 
 def CancelCallback():
+    global cancel
     cancel = True
+
+def CopyToClipboard():
+    clipboard.copy(outputText)
 
 def GreyrampCallback(sender, data):
     ImageProcesser.greyRamp = data
@@ -83,8 +99,13 @@ with dpg.window(label="Image Asciifier", tag="MainWindow"):
     dpg.add_button(label="Generate", callback=Generate, tag="GenerateButton")
 
     with dpg.popup("GenerateButton", modal=True, tag="ProgressModal", min_size=(300, 100)):
+            dpg.add_text("Processing: 00000/12482  |  23%", tag="ProgressText")
             dpg.add_progress_bar(tag="ProgressBar")
             dpg.add_button(label="Cancel Generation", callback=CancelCallback)
+
+with dpg.window(label="Image Preview", width=800, height=550, show=False, tag="Preview"):
+    dpg.add_text("ERROR displaying text", tag="PreviewText")
+    dpg.add_button(label="Copy to Clipboard", callback=CopyToClipboard)
 
 
 def InitGUI():
